@@ -1,0 +1,42 @@
+
+
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{enumitem}
+
+\title{PRACA DOMOWA 3}
+\author{IMIĘ NAZWISKO}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{enumerate}[label=\Alph*)]
+    \item ryby,
+    \begin{enumerate}[label=\Alph{enumi}.\alph*)]
+        \item śluzice (Myxini)
+        \item Petromyzontida
+        \begin{enumerate}[label=\Alph{enumi}.\alph{enumii}.\Roman*)]
+            \item Geotriidae
+            \item Mordaciidae
+            \item Petromyzontidae -- minogowate
+        \end{enumerate}
+        \item ryby chrzęstnoszkieletowe (Chondrichthyes)
+        \begin{enumerate}[label=\Alph{enumi}.\alph{enumii}.\Roman*)]
+            \item spodouste (Elasmobranchii)
+            \begin{enumerate}[label=\roman*]
+                \item rekiny
+                \item płaszczki
+            \end{enumerate}
+            \item zrosłogłowe (Holocephali)
+        \end{enumerate}
+        \item ryby kostnoszkieletowe (Osteichthyes, w tym czworonogi).
+    \end{enumerate}
+    \item płazy,
+    \item gady,
+    \item ptaki,
+    \item ssaki
+\end{enumerate}
+
+\end{document}
