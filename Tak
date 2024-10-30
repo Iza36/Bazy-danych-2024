@@ -56,11 +56,12 @@ _____________________________________________________________
 \REQUIRE $n \geq 0$
 \ENSURE $a = x^n$
 \STATE $k \gets n$; $a \gets 1$; $b \gets x$
-\WHILE{$k > 0$ \textbf{do} [Niezmiennik: $x^n = a \cdot b^k$]}
+\WHILE{$k > 0$} \COMMENT{Niezmiennik: $x^n = a \cdot b^k$}
     \IF{$k$ jest liczbą parzystą}
         \STATE $k \gets k / 2$
         \STATE $b \gets b \cdot b$
-    \ELSE[$k$ jest liczbą nieparzystą]
+    \ELSE 
+        \COMMENT{$k$ jest liczbą nieparzystą}
         \STATE $k \gets k - 1$
         \STATE $a \gets a \cdot b$
     \ENDIF
