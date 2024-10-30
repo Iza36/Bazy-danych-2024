@@ -44,7 +44,7 @@ _____________________________________________________________
 
 \documentclass{article}
 \usepackage{algorithm}
-\usepackage{algorithmic}
+\usepackage{algpseudocode} % Zamiana algorithmic na algpseudocode
 \usepackage[polish]{babel}
 \usepackage[utf8]{inputenc}
 
@@ -53,19 +53,18 @@ _____________________________________________________________
 \begin{algorithm}
 \caption{Mój algorytm}
 \begin{algorithmic}[1]
-\REQUIRE $n \geq 0$
-\ENSURE $a = x^n$
-\STATE $k \gets n$; $a \gets 1$; $b \gets x$
-\WHILE{$k > 0$} \COMMENT{Niezmiennik: $x^n = a \cdot b^k$}
-    \IF{$k$ jest liczbą parzystą}
-        \STATE $k \gets k / 2$
-        \STATE $b \gets b \cdot b$
-    \ELSE 
-        \COMMENT{$k$ jest liczbą nieparzystą}
-        \STATE $k \gets k - 1$
-        \STATE $a \gets a \cdot b$
-    \ENDIF
-\ENDWHILE
+\Require $n \geq 0$
+\Ensure $a = x^n$
+\State $k \gets n$; $a \gets 1$; $b \gets x$
+\While{$k > 0$} \Comment{Niezmiennik: $x^n = a \cdot b^k$}
+    \If{$k$ jest liczbą parzystą}
+        \State $k \gets k / 2$
+        \State $b \gets b \cdot b$
+    \Else 
+        \State $k \gets k - 1$
+        \State $a \gets a \cdot b$
+    \EndIf
+\EndWhile
 \end{algorithmic}
 \end{algorithm}
 
