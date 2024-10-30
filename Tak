@@ -1,7 +1,6 @@
-
-
 \documentclass{article}
 \usepackage[utf8]{inputenc}
+\usepackage{polski}
 \usepackage{enumitem}
 
 \title{PRACA DOMOWA 3}
@@ -17,15 +16,15 @@
     \begin{enumerate}[label=\Alph{enumi}.\alph*)]
         \item śluzice (Myxini)
         \item Petromyzontida
-        \begin{enumerate}[label=\Alph{enumi}.\alph{enumii}.\Roman*)]
+        \begin{enumerate}[label*=\arabic*.]
             \item Geotriidae
             \item Mordaciidae
             \item Petromyzontidae -- minogowate
         \end{enumerate}
         \item ryby chrzęstnoszkieletowe (Chondrichthyes)
-        \begin{enumerate}[label=\Alph{enumi}.\alph{enumii}.\Roman*)]
+        \begin{enumerate}[label*=\arabic*.]
             \item spodouste (Elasmobranchii)
-            \begin{enumerate}[label=\roman*]
+            \begin{enumerate}[label*=\roman*.]
                 \item rekiny
                 \item płaszczki
             \end{enumerate}
