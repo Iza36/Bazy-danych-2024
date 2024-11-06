@@ -1,7 +1,133 @@
+Zadanie 1
+
+
+CREATE TABLE postac (
+    id_postac INTEGER PRIMARY KEY AUTO_INCREMENT,
+    nazwa VARCHAR(40),
+    rodzaj ENUM('wiking', 'ptak', 'kobieta'),
+    data_ur DATE,
+    wiek INTEGER
+);
+
+INSERT INTO postac (nazwa, rodzaj, data_ur, wiek) VALUES 
+    ('Bjorn', 'wiking', '1980-05-14', 44),
+    ('Drozd', 'ptak', '2020-06-01', 4),
+    ('Tesciowa', 'kobieta', '1936-10-01', 87);
+
+UPDATE postac SET wiek = 88 WHERE nazwa = 'Tesciowa';
+
+
+
+Zadanie 2
+
+
+CREATE TABLE walizka (
+    id_walizki INT AUTO_INCREMENT PRIMARY KEY,
+    pojemnosc INT UNSIGNED NOT NULL,
+    KOLOR ENUM('rozowy', 'czerwony', 'teczowy', 'zołty') DEFAULT 'rozowy',
+    id_wlasciciela INT,
+    FOREIGN KEY (id_wlasciciela) REFERENCES postac(id_postac) ON DELETE CASCADE
+);
+
+INSERT INTO walizka (pojemnosc, id_wlasciciela) VALUES 
+    (50, 1),
+    (60, 2);
+
+
+Zadanie 3
+
+
+CREATE TABLE izba (
+    adres_budynku VARCHAR(255),
+    nazwa_izby VARCHAR(255),
+    metraz INT UNSIGNED NOT NULL,
+    wlasciciel INT,
+    PRIMARY KEY (adres_budynku, nazwa_izby),
+    FOREIGN KEY (wlasciciel) REFERENCES postac(id_postac) ON DELETE SET NULL
+);
+
+ALTER TABLE izba ADD COLUMN kolor ENUM('czarny', 'bialy', 'czerwony', 'zielony') DEFAULT 'czarny' AFTER metraz;
+
+INSERT INTO izba (adres_budynku, nazwa_izby, metraz, wlasciciel) VALUES 
+    ('ul. ugabuga 666', 'spizarnia', 25, NULL);
+
+
+Zadanie 4
+
+
+
+CREATE TABLE przetwory (
+    id_przetworu INT AUTO_INCREMENT PRIMARY KEY,
+    rok_produkcji VARCHAR(4) DEFAULT '1654',
+    id_wykonawcy INT,
+    zawartosc VARCHAR(255) NOT NULL,
+    dodatek VARCHAR(255) DEFAULT 'papryczka chilli',
+    id_konsumenta INT,
+    FOREIGN KEY (id_wykonawcy) REFERENCES postac(id_postac),
+    FOREIGN KEY (id_konsumenta) REFERENCES postac(id_postac)
+);
+
+INSERT INTO przetwory (rok_produkcji, id_wykonawcy, zawartosc, dodatek, id_konsumenta) VALUES 
+    ('1666', 1, 'bigos', 'papryczka chilli', 2);
 
 
 
 
+_______________________________
+06/11/2024
+zadanie 1
+
+START TRANSACTION;
+
+DELETE FROM wikingowie
+WHERE imie != 'Bjorn'
+ORDER BY wiek DESC
+LIMIT 2;
+
+ALTER TABLE postac DROP PRIMARY KEY;
+
+COMMIT;
+
+zadanie 2
+
+START TRANSACTION;
+
+ALTER TABLE postac ADD COLUMN pesel CHAR(11);
+ALTER TABLE postac MODIFY pesel CHAR(11) PRIMARY KEY;
+
+ALTER TABLE postac MODIFY COLUMN rodzaj VARCHAR(50);
+
+INSERT INTO postac (pesel, imie, rodzaj) VALUES ('12345678901', 'Gertruda Nieszczera', 'syrena');
+
+COMMIT;
+
+zadanie 3
+
+START TRANSACTION;
+
+UPDATE postac SET statek = 'Bjorn'
+WHERE imie LIKE '%a%';
+
+UPDATE statki SET ladownosc = ladownosc * 0.7
+WHERE YEAR(data_wodowania) BETWEEN 1901 AND 2000;
+
+ALTER TABLE postac ADD CONSTRAINT wiek_check CHECK (wiek <= 1000);
+
+COMMIT;
+
+
+zadanie 4
+
+START TRANSACTION;
+
+INSERT INTO postac (pesel, imie, rodzaj) VALUES ('12345678902', 'Loko', 'waz');
+
+CREATE TABLE Marynarz AS SELECT * FROM Postac WHERE statek IS NOT NULL;
+
+ALTER TABLE Marynarz ADD PRIMARY KEY (pesel);
+ALTER TABLE Marynarz ADD CONSTRAINT fk_statek FOREIGN KEY (statek_id) REFERENCES statki(id);
+
+COMMIT;
 _____________________________________________
 LATEX
 
