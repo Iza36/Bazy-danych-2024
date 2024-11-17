@@ -120,9 +120,39 @@ LEKCJA 2 MYSQL
 zadanie 1
 
 DELETE FROM postac
-    -> WHERE nazwa <> 'Bjorn'
-    -> ORDER BY wiek DESC
-    -> LIMIT 2;
+    -> WHERE nazwa != 'Bjorn'
+    -> ORDER BY wiek
+    -> DESC  LIMIT 2;
+
+
+ALTER TABLE postac DROP PRIMARY KEY;
+
+
+UPDATE postac 
+SET pesel = LPAD(id_postaci, 11, '0') 
+WHERE pesel IS NULL;
+
+ALTER TABLE postac MODIFY pesel CHAR(11) NOT NULL;
+
+ALTER TABLE postac ADD PRIMARY KEY (pesel);
+
+ALTER TABLE postac MODIFY rodzaj VARCHAR(50);
+
+
+__________(poprawiane)
+
+INSERT INTO postac (imie, rodzaj, wiek, pesel) 
+VALUES ('Gertruda Nieszczera', 'syrena', 100, '12345678901');
+
+INSERT INTO postac_statek (id_postac, id_statek)
+SELECT p.id, s.id
+FROM postac p
+JOIN statek s ON s.nazwa_statku = 'Bjorn'
+WHERE p.imie LIKE '%a%';
+
+
+
+
 
 
 __________(poprawiane rzeczy bo nie działa)____________
