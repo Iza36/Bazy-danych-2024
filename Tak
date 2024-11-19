@@ -96,19 +96,19 @@ INSERT INTO statek (nazwa_statku, rodzaj_statku, data_wodowania, max_ladownosc) 
 ('Drakkar', 'długi', '1000-05-01', 200),
 ('Knorr', 'handlowy', '1100-08-15', 150);
 
-ALTER TABLE Postacie ADD Funkcja VARCHAR(50);
+ALTER TABLE Postac ADD Funkcja VARCHAR(50);
 
 
 _______cos mi tu nie działa___
 
-ALTER TABLE Postacie ADD CONSTRAINT FK_StatekNazwa FOREIGN KEY (StatekNazwa) REFERENCES Statek(NazwaStatku);
+ALTER TABLE Posta ADD CONSTRAINT FK_StatekNazwa FOREIGN KEY (StatekNazwa) REFERENCES Statek(NazwaStatku);
 
 
-UPDATE Postacie SET StatekNazwa = 'Drakkar' WHERE Typ = 'Wiking' LIMIT 3;
+UPDATE Postac SET StatekNazwa = 'Drakkar' WHERE Typ = 'Wiking' LIMIT 3;
 
 
-UPDATE Postacie SET StatekNazwa = 'SzybkaFala' WHERE Typ = 'Wiking' AND StatekNazwa IS NULL;
-UPDATE Postacie SET StatekNazwa = 'SzybkaFala' WHERE Typ = 'Ptak' AND Nazwa = 'Drozd';
+UPDATE Postac SET StatekNazwa = 'SzybkaFala' WHERE Typ = 'Wiking' AND StatekNazwa IS NULL;
+UPDATE Postac SET StatekNazwa = 'SzybkaFala' WHERE Typ = 'Ptak' AND Nazwa = 'Drozd';
 
 
 DELETE FROM Izba WHERE NazwaIzby = 'Spiżarnia';
