@@ -81,7 +81,7 @@ INSERT INTO postac (pesel, nazwa, rodzaj, wiek, funkcja) VALUES
 
 CREATE TABLE statek (
     nazwa_statku VARCHAR(50) PRIMARY KEY,
-    rodzaj_statku ENUM('długi', 'handlowy', 'wojenny') NOT NULL,
+    rodzaj_statku ENUM('dlugi', 'handlowy', 'wojenny') NOT NULL,
     data_wodowania DATE NOT NULL,
     max_ladownosc INT UNSIGNED NOT NULL
 );
@@ -93,27 +93,41 @@ INSERT INTO Statek (NazwaStatku, RodzajStatku, DataWodowania, MaxLadownosc) VALU
 
 
 INSERT INTO statek (nazwa_statku, rodzaj_statku, data_wodowania, max_ladownosc) VALUES
-('Drakkar', 'długi', '1000-05-01', 200),
+('Drakkar', 'dlugi', '1000-05-01', 200),
 ('Knorr', 'handlowy', '1100-08-15', 150);
 
-ALTER TABLE Postac ADD Funkcja VARCHAR(50);
+ALTER TABLE postac ADD Funkcja VARCHAR(50);
+
+ALTER TABLE postac CHANGE COLUMN id_statku nazwa_statku VARCHAR(50);
+ALTER TABLE postac MODIFY COLUMN nazwa_statku VARCHAR(50);
+ALTER TABLE postac 
+ADD CONSTRAINT FK_stateknazwa 
+FOREIGN KEY (nazwa_statku) 
+REFERENCES statek(nazwa_statku);
+
+SELECT * FROM postac WHERE nazwa_statku NOT IN (SELECT nazwa_statku FROM statek);
 
 
-_______cos mi tu nie działa___
-
-ALTER TABLE Posta ADD CONSTRAINT FK_StatekNazwa FOREIGN KEY (StatekNazwa) REFERENCES Statek(NazwaStatku);
+ALTER TABLE postac ADD CONSTRAINT FK_stateknazwa FOREIGN KEY (stateknazwa) REFERENCES statek(nazwastatku);
 
 
-UPDATE Postac SET StatekNazwa = 'Drakkar' WHERE Typ = 'Wiking' LIMIT 3;
+UPDATE postac
+SET nazwa_statku = 'Drakkar'
+WHERE rodzaj = 'Wiking'
+LIMIT 3;
+
+UPDATE postac SET nazwa_statku = 'Drakkar' WHERE nazwa_statku IS NULL;
+
+INSERT INTO statek (nazwa_statku, rodzaj_statku, data_wodowania, max_ladownosc)
+VALUES ('SzybkaFala', 'dugi', '2000-01-01', 300);
+
+UPDATE postac SET nazwa_statku = 'SzybkaFala' WHERE rodzaj = 'Wiking' AND nazwa_statku IS NULL;
+UPDATE postac SET nazwa_statku = 'SzybkaFala' WHERE rodzaj = 'Ptak' AND nazwa = 'Drozd';
 
 
-UPDATE Postac SET StatekNazwa = 'SzybkaFala' WHERE Typ = 'Wiking' AND StatekNazwa IS NULL;
-UPDATE Postac SET StatekNazwa = 'SzybkaFala' WHERE Typ = 'Ptak' AND Nazwa = 'Drozd';
+DELETE FROM izba WHERE NazwaIzby = 'Spiżarnia';
 
-
-DELETE FROM Izba WHERE NazwaIzby = 'Spiżarnia';
-
-DROP TABLE Izba;
+DROP TABLE izba;
 
 _________________________________________________________________________________
 
