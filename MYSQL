@@ -5,17 +5,17 @@ Zadanie 1
 
 
 CREATE TABLE postac (
-    ->     id_postaci SERIAL PRIMARY KEY,
-    ->     nazwa VARCHAR(40),
-    ->     rodzaj VARCHAR(10) CHECK (rodzaj IN ('wiking', 'ptak', 'kobieta')),
-    ->     data_ur DATE,
-    ->     wiek INT
-    -> );
+id_postaci SERIAL PRIMARY KEY,
+nazwa VARCHAR(40),
+rodzaj VARCHAR(10) CHECK (rodzaj IN ('wiking', 'ptak', 'kobieta')),
+data_ur DATE,
+wiek INT
+);
 
 INSERT INTO postac (nazwa, rodzaj, data_ur, wiek) VALUES
-    -> ('Bjorn', 'wiking', '1990-05-14', 34),
-    -> ('Drozd', 'ptak', '2018-06-21', 6),
-    -> ('Tesciowa', 'kobieta', '1936-03-15', 87);
+('Bjorn', 'wiking', '1990-05-14', 34),
+('Drozd', 'ptak', '2018-06-21', 6),
+('Tesciowa', 'kobieta', '1936-03-15', 87);
 
 UPDATE postac SET wiek = 88 WHERE nazwa = 'Tesciowa';
 
@@ -24,48 +24,48 @@ Zadanie 2
 
 
 CREATE TABLE walizka (
-    ->     id_walizki SERIAL PRIMARY KEY,
-    ->     pojemnosc INT,
-    ->     kolor VARCHAR(10) DEFAULT 'rowy' CHECK (kolor IN ('rowy', 'czerwony', 'tczowy', 'ty')),
-    ->     id_wlasciciela INT REFERENCES postac(id_postaci) ON DELETE CASCADE
-    -> );
+id_walizki SERIAL PRIMARY KEY,
+pojemnosc INT,
+kolor VARCHAR(10) DEFAULT 'rowy' CHECK (kolor IN ('rowy', 'czerwony', 'tczowy', 'ty')),
+id_wlasciciela INT REFERENCES postac(id_postaci) ON DELETE CASCADE
+);
 
 INSERT INTO walizka (pojemnosc, id_wlasciciela) VALUES
-    -> (30, (SELECT id_postaci FROM postac WHERE nazwa = 'Bjorn')),
-    -> (25, (SELECT id_postaci FROM postac WHERE nazwa = 'Tesciowa'));
+(30, (SELECT id_postaci FROM postac WHERE nazwa = 'Bjorn')),
+(25, (SELECT id_postaci FROM postac WHERE nazwa = 'Tesciowa'));
 
 
 Zadanie 3
 
 
 CREATE TABLE izba (
-    ->     adres_budynku VARCHAR(50),
-    ->     nazwa_izby VARCHAR(50),
-    ->     metraz INT,
-    ->     wlasciciel INT REFERENCES postac(id_postaci) ON DELETE SET NULL,
-    ->     PRIMARY KEY (adres_budynku, nazwa_izby)
-    -> );
+adres_budynku VARCHAR(50),
+nazwa_izby VARCHAR(50),
+metraz INT,
+wlasciciel INT REFERENCES postac(id_postaci) ON DELETE SET NULL,
+PRIMARY KEY (adres_budynku, nazwa_izby)
+);
 
 ALTER TABLE izba ADD COLUMN kolor VARCHAR(10) DEFAULT 'czarny';
 
 INSERT INTO izba (adres_budynku, nazwa_izby, metraz, wlasciciel) VALUES
-    -> ('Chatka Bjorna', 'spiarnia', 15, (SELECT id_postaci FROM postac WHERE nazwa = 'Bjorn'));
+('Chatka Bjorna', 'spiarnia', 15, (SELECT id_postaci FROM postac WHERE nazwa = 'Bjorn'));
 
 
 Zadanie 4
 
 
 CREATE TABLE przetwory (
-    ->     id_przetworu SERIAL PRIMARY KEY,
-    ->     rok_produkcji INT DEFAULT 1654,
-    ->     id_wykonawcy INT REFERENCES postac(id_postaci),
-    ->     zawartosc VARCHAR(100),
-    ->     dodatek VARCHAR(50) DEFAULT 'papryczka chilli',
-    ->     id_konsumenta INT REFERENCES postac(id_postaci)
-    -> );
+id_przetworu SERIAL PRIMARY KEY,
+rok_produkcji INT DEFAULT 1654,
+id_wykonawcy INT REFERENCES postac(id_postaci),
+zawartosc VARCHAR(100),
+dodatek VARCHAR(50) DEFAULT 'papryczka chilli',
+id_konsumenta INT REFERENCES postac(id_postaci)
+);
 
 INSERT INTO przetwory (rok_produkcji, id_wykonawcy, zawartosc, dodatek, id_konsumenta) VALUES
-    -> (2024, (SELECT id_postaci FROM postac WHERE nazwa = 'Bjorn'), 'bigos', 'papryczka chilli', (SELECT id_postaci FROM postac WHERE nazwa = 'Tesciowa'));
+(2024, (SELECT id_postaci FROM postac WHERE nazwa = 'Bjorn'), 'bigos', 'papryczka chilli', (SELECT id_postaci FROM postac WHERE nazwa = 'Tesciowa'));
 
 
 Zadanie 5
@@ -80,10 +80,10 @@ INSERT INTO postac (pesel, nazwa, rodzaj, wiek, funkcja) VALUES
 
 
 CREATE TABLE statek (
-    nazwa_statku VARCHAR(50) PRIMARY KEY,
-    rodzaj_statku ENUM('dlugi', 'handlowy', 'wojenny') NOT NULL,
-    data_wodowania DATE NOT NULL,
-    max_ladownosc INT UNSIGNED NOT NULL
+nazwa_statku VARCHAR(50) PRIMARY KEY,
+rodzaj_statku ENUM('dlugi', 'handlowy', 'wojenny') NOT NULL,
+data_wodowania DATE NOT NULL,
+max_ladownosc INT UNSIGNED NOT NULL
 );
 
 
@@ -136,9 +136,9 @@ LEKCJA 2 MYSQL
 zadanie 1
 
 DELETE FROM postac
-    -> WHERE nazwa != 'Bjorn'
-    -> ORDER BY wiek
-    -> DESC  LIMIT 2;
+WHERE nazwa != 'Bjorn'
+ORDER BY wiek
+DESC  LIMIT 2;
 
 
 ALTER TABLE postac DROP PRIMARY KEY;
