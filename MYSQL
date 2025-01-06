@@ -410,3 +410,278 @@ SELECT rodzaj,
 FROM kreatura
 GROUP BY rodzaj;
 
+
+_____________________________________________________________________________________________________________________________________________
+
+Lekcja 5
+
+
+Zadanie 1
+ (nie mam wszystkich tabeli, robie nowe)
+
+
+
+CREATE TABLE IF NOT EXISTS kreatura (
+  idKreatura INT PRIMARY KEY AUTO_INCREMENT,
+  nazwa VARCHAR(30),
+  rodzaj VARCHAR(30),
+  dataUr DATE,
+  waga INT UNSIGNED,
+  udzwig INT UNSIGNED
+);
+
+
+CREATE TABLE IF NOT EXISTS wyprawa (
+  idWyprawa INT PRIMARY KEY AUTO_INCREMENT,
+  nazwa VARCHAR(100),
+  dataPoczatku DATE,
+  dataZakonczenia DATE
+);
+
+
+ALTER TABLE kreatura CHANGE idKreatury idKreatura INT;
+CREATE INDEX idx_idKreatura ON kreatura(idKreatura);
+
+CREATE TABLE IF NOT EXISTS uczestnicy (
+    idUczestnik INT PRIMARY KEY AUTO_INCREMENT,
+    idKreatura INT,
+    idWyprawa INT,
+    FOREIGN KEY (idKreatura) REFERENCES kreatura(idKreatura),
+    FOREIGN KEY (idWyprawa) REFERENCES wyprawa(idWyprawa)
+);
+
+
+
+
+CREATE TABLE IF NOT EXISTS etapy_wyprawy (
+  idEtap INT PRIMARY KEY AUTO_INCREMENT,
+  idWyprawa INT,
+  nrEtapu INT,
+  dataRozpoczecia DATE,
+  dataZakonczenia DATE,
+  kierownik INT,
+  FOREIGN KEY (idWyprawa) REFERENCES wyprawa(idWyprawa),
+  FOREIGN KEY (kierownik) REFERENCES kreatura(idKreatura)
+);
+
+
+CREATE TABLE IF NOT EXISTS sektor (
+  idSektor INT PRIMARY KEY AUTO_INCREMENT,
+  nazwaSektora VARCHAR(100),
+  idEtap INT,
+  FOREIGN KEY (idEtap) REFERENCES etapy_wyprawy(idEtap)
+);
+
+
+
+Zadanie 2
+
+
+SELECT w.nazwa,
+       COUNT(u.idKreatura) AS liczba_uczestnikow,
+       GROUP_CONCAT(k.nazwa SEPARATOR ', ') AS uczestnicy
+FROM wyprawa w
+JOIN etapy_wyprawy ew ON w.idWyprawa = ew.idWyprawa
+JOIN uczestnicy u ON ew.idWyprawa = u.idWyprawa
+JOIN kreatura k ON u.idKreatura = k.idKreatura
+GROUP BY w.nazwa;
+
+SELECT ew.dataRozpoczecia, s.nazwaSektora AS sektor, k.nazwa AS kierownik, ew.nrEtapu
+FROM etapy_wyprawy ew
+JOIN sektor s ON ew.idEtap = s.idEtap
+JOIN kreatura k ON ew.kierownik = k.idKreatura
+ORDER BY ew.dataRozpoczecia, ew.nrEtapu;
+
+
+Zadanie 3
+
+SELECT w.nazwa,
+       COUNT(u.idKreatura) AS liczba_uczestnikow,
+       GROUP_CONCAT(k.nazwa SEPARATOR ', ') AS uczestnicy
+FROM wyprawa w
+JOIN uczestnicy u ON u.idWyprawa = w.idWyprawa
+JOIN kreatura k ON u.idKreatura = k.idKreatura
+GROUP BY w.nazwa;
+
+
+SELECT ew.dataRozpoczecia,
+       s.nazwaSektora AS sektor,
+       k.nazwa AS kierownik,
+       ew.nrEtapu
+FROM etapy_wyprawy ew
+JOIN sektor s ON ew.idEtap = s.idEtap  -- zmieniamy na odpowiednią kolumnę powiązania
+JOIN kreatura k ON ew.kierownik = k.idKreatura
+ORDER BY ew.dataRozpoczecia, ew.nrEtapu;
+
+
+
+Zadanie 5 
+
+
+SELECT w.nazwa AS wyprawa,
+       COUNT(u.idKreatura) AS liczba_uczestnikow,
+       GROUP_CONCAT(k.nazwa SEPARATOR ', ') AS uczestnicy,
+       k2.nazwa AS kierownik
+FROM wyprawa w
+JOIN uczestnicy u ON u.idWyprawa = w.idWyprawa
+JOIN kreatura k ON u.idKreatura = k.idKreatura
+JOIN etapy_wyprawy ew ON ew.idWyprawa = w.idWyprawa
+JOIN kreatura k2 ON ew.kierownik = k2.idKreatura
+GROUP BY w.nazwa, k2.nazwa;
+
+
+_____________________________________________________________________________________________________________________________________________________________
+
+Lekcja 6 
+
+
+
+Zadanie 1
+
+DELIMITER $$
+
+CREATE TRIGGER check_waga_before_insert
+BEFORE INSERT ON kreatura
+FOR EACH ROW
+BEGIN
+    IF NEW.waga <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Waga musi być większa od zera!';
+    END IF;
+END$$
+
+DELIMITER ;
+
+
+Zadanie 2
+
+
+DELIMITER $$
+
+CREATE TRIGGER archive_wyprawa_after_delete
+AFTER DELETE ON wyprawa
+FOR EACH ROW
+BEGIN
+    INSERT INTO archiwum_wypraw (id_wyprawy, nazwa, data_rozpoczecia, data_zakonczenia, kierownik)
+    VALUES (
+        OLD.idWyprawa,
+        OLD.nazwa,
+        OLD.dataPoczatku,
+        OLD.dataZakonczenia,
+        (SELECT nazwa
+         FROM kreatura k
+         JOIN uczestnicy u ON u.idKreatura = k.idKreatura
+         WHERE u.idWyprawa = OLD.idWyprawa LIMIT 1)
+    );
+END$$
+DELIMITER ;
+
+
+
+Zadanie 3
+
+
+DELIMITER $$
+
+CREATE PROCEDURE eliksir_sily (IN kreatura_id INT)
+BEGIN
+    UPDATE kreatura 
+    SET udzwig = udzwig * 1.2
+    WHERE idKreatura = kreatura_id;
+END$$
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE FUNCTION text_to_upper(input_text VARCHAR(255)) 
+RETURNS VARCHAR(255)
+BEGIN
+    RETURN UPPER(input_text);
+END$$
+DELIMITER ;
+
+
+
+Zadanie 4
+
+
+CREATE TABLE IF NOT EXISTS system_alarmowy (
+    id_alarmu INT AUTO_INCREMENT PRIMARY KEY,
+    wiadomosc VARCHAR(255)
+);
+
+
+
+DELIMITER $$
+
+CREATE TRIGGER alarm_for_mission
+AFTER INSERT ON wyprawa
+FOR EACH ROW
+BEGIN
+    DECLARE teściowa_id INT;
+    DECLARE domek_dziadka_id INT;
+
+    SELECT idKreatura INTO teściowa_id FROM kreatura WHERE nazwa = 'Teściowa';
+    SELECT idSektora INTO domek_dziadka_id FROM sektor WHERE nazwaSektora = 'Domek Dziadka';
+
+    IF EXISTS (SELECT 1 FROM uczestnicy u 
+               JOIN etapy_wyprawy ew ON u.idWyprawa = ew.idWyprawa 
+               WHERE u.idKreatura = teściowa_id AND ew.idSektora = domek_dziadka_id) THEN
+        INSERT INTO system_alarmowy (wiadomosc) VALUES ('Teściowa nadchodzi !!!');
+    END IF;
+END$$
+DELIMITER ;
+
+
+
+Zadanie 5 
+
+
+DELIMITER $$
+
+CREATE PROCEDURE udzwig_stats (OUT avg_udzwig DECIMAL(10,2), OUT total_udzwig DECIMAL(10,2), OUT max_udzwig INT)
+BEGIN
+    SELECT AVG(udzwig), SUM(udzwig), MAX(udzwig) INTO avg_udzwig, total_udzwig, max_udzwig
+    FROM kreatura;
+END$$
+
+DELIMITER ;
+
+
+
+
+
+DELIMITER $$
+
+CREATE PROCEDURE get_sektory_for_wyprawa (IN wyprawa_id INT)
+BEGIN
+    DECLARE done INT DEFAULT 0;
+    DECLARE current_sektor VARCHAR(100);
+    DECLARE current_sektor_code VARCHAR(10);
+    DECLARE cur CURSOR FOR
+        SELECT s.nazwaSektora, CONCAT(s.nazwaSektora, '_', s.idSektor)
+        FROM sektor s
+        JOIN etapy_wyprawy ew ON s.idSektora = ew.idSektora
+        WHERE ew.idWyprawa = wyprawa_id
+        ORDER BY ew.nrEtapu;
+    
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    OPEN cur;
+
+    read_loop: LOOP
+        FETCH cur INTO current_sektor, current_sektor_code;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+        SELECT current_sektor_code, current_sektor;
+    END LOOP;
+
+    CLOSE cur;
+END$$
+
+DELIMITER ;
+
+
+
+
