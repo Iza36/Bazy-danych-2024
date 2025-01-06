@@ -174,6 +174,239 @@ INSERT INTO postac (pesel, nazwa, rodzaj, wiek) VALUES ('12345678901', 'Gertruda
 
 
 zadanie 3
+UPDATE postac
+SET nazwa_statku = 'Bjorn'
+WHERE nazwa LIKE '%a%';
+
+UPDATE statek
+SET max_ladownosc = max_ladownosc * 0.7
+WHERE YEAR(data_wodowania) BETWEEN 1900 AND 1999;
+
+ALTER TABLE postac
+ADD CONSTRAINT postac_chk_wiek CHECK (wiek <= 1000);
 
 
+Zadanie 4 
+
+INSERT INTO postac (nazwa, rodzaj, data_ur, wiek)
+VALUES ('Loko', 'wez', '2024-01-01', 10);
+
+ALTER TABLE postac MODIFY COLUMN pesel CHAR(11) DEFAULT '00000000000';
+
+INSERT INTO postac (nazwa, rodzaj, data_ur, wiek)
+VALUES ('Loko', 'wez', '2024-01-01', 10);
+
+CREATE TABLE Marynarz AS
+SELECT * FROM postac
+WHERE nazwa_statku IS NOT NULL;
+
+ALTER TABLE Marynarz
+ADD CONSTRAINT FK_new_stateknazwa FOREIGN KEY (nazwa_statku) REFERENCES statek(nazwa_statku);
+ALTER TABLE Marynarz 
+  ADD CONSTRAINT FK_statek_nazwa_statku FOREIGN KEY (nazwa_statku) 
+  REFERENCES statek(nazwa_statku);
+
+zadanie 5
+
+UPDATE postac
+SET nazwa_statku = NULL;
+
+DELETE FROM postac
+WHERE nazwa = 'Bjorn';
+
+UPDATE Marynarz SET nazwa_statku = NULL;
+
+DELETE FROM statek;
+ALTER TABLE Marynarz DROP FOREIGN KEY FK_statek_statki;
+
+(inaczej mam zapisane przypadkiem)
+
+DROP TABLE statek;
+
+
+CREATE TABLE zwierz (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nazwa VARCHAR(50),
+  wiek INT
+);
+
+
+INSERT INTO zwierz (nazwa, wiek)
+SELECT nazwa, wiek
+FROM postac
+WHERE rodzaj = 'waz';
+
+
+___________________________________________________________________________________________________________________________________
+Lekcja 3
+
+Zadanie 1 
+
+CREATE TABLE kreatura AS SELECT * FROM wikingowie.kreatura;
+CREATE TABLE zasob AS SELECT * FROM wikingowie.zasob;
+CREATE TABLE ekwipunek AS SELECT * FROM wikingowie.ekwipunek;
+
+SELECT * FROM zasob;
+
+SELECT * FROM zasob WHERE rodzaj = 'jedzenie';
+
+SELECT z.idZasobu, e.ilosc
+FROM zasob z
+JOIN ekwipunek e ON z.idZasobu = e.idZasobu
+WHERE e.idKreatury IN (1, 3, 5);
+
+
+Zadanie 2
+
+SELECT * FROM kreatura WHERE nazwa != 'wiedźma' AND waga >= 50;
+
+SELECT * FROM zasob WHERE waga BETWEEN 2 AND 5;
+
+SELECT * FROM kreatura WHERE nazwa LIKE '%or%' AND waga BETWEEN 30 AND 70;
+
+
+Zadanie 3
+
+SELECT * FROM zasob WHERE MONTH(dataPozyskania) IN (7, 8);
+SELECT * FROM zasob ORDER BY waga;
+SELECT * FROM kreatura ORDER BY dataUr LIMIT 5;
+
+Zadanie 4
+
+SELECT DISTINCT rodzaj FROM zasob;
+SELECT CONCAT(nazwa, ' - ', rodzaj) AS kreatura_rodzaj FROM kreatura WHERE rodzaj LIKE 'wi%';
+SELECT idZasobu, ilosc * waga AS calkowita_waga FROM zasob WHERE YEAR(dataPozyskania) BETWEEN 2000 AND 2007;
+
+Zadanie 5
+
+SELECT 
+    nazwa,
+    waga * ilosc AS waga_brutto,
+    waga * ilosc * 0.7 AS waga_netto,
+    waga * ilosc * 0.3 AS waga_odpadkow
+FROM 
+    zasob
+WHERE 
+    rodzaj = 'jedzenie';
+SELECT * 
+FROM zasob
+WHERE rodzaj IS NULL;
+SELECT DISTINCT nazwa
+FROM zasob
+WHERE nazwa LIKE 'Ba%' OR nazwa LIKE '%os'
+ORDER BY nazwa;
+
+
+___________________________________________________________________________________________________________________________________________________________
+
+Lekcja 4
+
+
+Zadanie 1
+
+SELECT AVG(waga) AS srednia_waga
+FROM kreatura
+WHERE rodzaj = 'wiking';
+
+SELECT rodzaj, 
+       AVG(waga) AS srednia_waga, 
+       COUNT(*) AS liczba_kreatur
+FROM kreatura
+GROUP BY rodzaj;
+
+SELECT rodzaj, 
+       AVG(YEAR(CURDATE()) - YEAR(dataUr)) AS sredni_wiek
+FROM kreatura
+GROUP BY rodzaj;
+
+
+Zadanie 2
+
+SELECT rodzaj, 
+       SUM(waga * ilosc) AS suma_wag
+FROM zasob
+GROUP BY rodzaj;
+
+
+SELECT nazwa, 
+       AVG(waga) AS srednia_waga
+FROM zasob
+WHERE ilosc >= 4
+GROUP BY nazwa
+HAVING SUM(waga * ilosc) > 10;
+
+
+SELECT rodzaj, 
+       COUNT(DISTINCT nazwa) AS liczba_nazw
+FROM zasob
+WHERE ilosc > 1
+GROUP BY rodzaj;
+
+
+Zadanie 3
+
+SELECT k.nazwa AS kreatura, 
+       SUM(e.ilosc) AS ilosc_zasobow
+FROM kreatura k
+JOIN ekwipunek e ON k.idKreatury = e.idKreatury
+GROUP BY k.nazwa;
+
+
+SELECT k.nazwa AS kreatura, 
+       GROUP_CONCAT(z.nazwa SEPARATOR ', ') AS zasoby
+FROM kreatura k
+JOIN ekwipunek e ON k.idKreatury = e.idKreatury
+JOIN zasob z ON e.idZasobu = z.idZasobu
+GROUP BY k.nazwa;
+
+
+SELECT k.nazwa 
+FROM kreatura k
+LEFT JOIN ekwipunek e ON k.idKreatury = e.idKreatury
+WHERE e.idKreatury IS NULL;
+
+
+
+
+Zadanie 4
+
+SELECT k.nazwa AS wiking, z.nazwa AS zasob
+FROM kreatura k
+NATURAL JOIN ekwipunek e
+NATURAL JOIN zasob z
+WHERE k.rodzaj = 'wiking' AND k.dataUr BETWEEN '1670-01-01' AND '1679-12-31';
+
+(puste czemu to jest puste???????????????)
+
+
+SELECT k.nazwa AS kreatura, k.dataUr
+FROM kreatura k
+JOIN ekwipunek e ON k.idKreatury = e.idKreatury
+JOIN zasob z ON e.idZasobu = z.idZasobu
+WHERE z.rodzaj = 'jedzenie'
+ORDER BY k.dataUr DESC
+LIMIT 5;
+
+
+SELECT k1.nazwa AS kreatura1, k2.nazwa AS kreatura2
+FROM kreatura k1
+JOIN kreatura k2 ON ABS(k1.idKreatury - k2.idKreatury) = 5;
+
+
+Zadanie 5
+
+SELECT k.rodzaj, 
+       AVG(z.waga * e.ilosc) AS srednia_waga_zasobow
+FROM kreatura k
+JOIN ekwipunek e ON k.idKreatury = e.idKreatury
+JOIN zasob z ON e.idZasobu = z.idZasobu
+WHERE k.rodzaj NOT IN ('malpa', 'waz') AND e.ilosc < 30
+GROUP BY k.rodzaj;
+
+
+SELECT rodzaj, 
+       MIN(dataUr) AS najstarsza_kreatura, 
+       MAX(dataUr) AS najmłodsza_kreatura
+FROM kreatura
+GROUP BY rodzaj;
 
