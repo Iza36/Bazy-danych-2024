@@ -26,7 +26,7 @@ Zadanie 2
 CREATE TABLE walizka (
 id_walizki SERIAL PRIMARY KEY,
 pojemnosc INT,
-kolor VARCHAR(10) DEFAULT 'rowy' CHECK (kolor IN ('rowy', 'czerwony', 'tczowy', 'ty')),
+kolor VARCHAR(10) DEFAULT 'rowy' CHECK (kolor IN ('rozowy', 'czerwony', 'teczowy', 'zolty')),
 id_wlasciciela INT REFERENCES postac(id_postaci) ON DELETE CASCADE
 );
 
