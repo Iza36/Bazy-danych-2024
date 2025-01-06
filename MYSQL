@@ -125,7 +125,7 @@ UPDATE postac SET nazwa_statku = 'SzybkaFala' WHERE rodzaj = 'Wiking' AND nazwa_
 UPDATE postac SET nazwa_statku = 'SzybkaFala' WHERE rodzaj = 'Ptak' AND nazwa = 'Drozd';
 
 
-DELETE FROM izba WHERE NazwaIzby = 'Spiżarnia';
+DELETE FROM izba WHERE NazwaIzby = 'Spizarnia';
 
 DROP TABLE izba;
 
